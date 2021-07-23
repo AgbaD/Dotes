@@ -11,6 +11,7 @@ import jwt
 
 from schema import validate_login, validate_reg, validate_user_db
 
+import uuid
 from functools import wraps
 from datetime import  datetime, timedelta
 
@@ -20,20 +21,39 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = ''
 app.config['MONGO_URI'] = 'mongodb+srv://asteroid:{password}@cluster0.ppcp1.mongodb.net/{database}?retryWrites=true&w=majority'\
     .format(password='asteroidpass', database="asteroiddb")
-app.config['CACHE_TYPE'] = 'SimpleCache'
 app.config['SSL_DISABLE'] = False
 
-cache = Cache()
 mongo = PyMongo(app)
 sslify = SSLify()
 CORS(app)
-cache.init_app(app)
 
 workspaces = mongo.db.workspaces
 users = mongo.db.users
 
 if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
     sslify.init_app(app)
+
+
+def token_optional(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        if 'x-access_token' in request.headers:
+            token = request.headers['x-access_token']
+
+        if not token:
+            return f(user=None, *args, **kwargs)
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+            user = users.find_one({'public_id': data['public_id']})
+            if user:
+                return f(user=user, *args, **kwargs)
+            return f(user=None, *args, **kwargs)
+        except Exception:
+            return f(user=None, *args, **kwargs)
+    return decorated
 
 
 def token_required(f):
@@ -91,7 +111,7 @@ def login():
                     'message': "Invalid email or password."
                 }), 402
 
-            if check_password_hash(user['password', password]):
+            if check_password_hash(user['password'], password):
                 token = jwt.encode({
                     'public_id': user['public_id'],
                     'exp': datetime.utcnow() + timedelta(minutes=30)
@@ -122,8 +142,8 @@ def login():
 
 
 @app.route('/register', methods=['POST'])
-@cache.cached(minutes=30)
-def register():
+@token_optional
+def register(user):
     if request.method == "POST":
         try:
             data = request.get_json()
@@ -134,11 +154,25 @@ def register():
             fullname = data['fullname']
             workspace = data['workspace']
 
+            if user:
+                if not user['is_admin']:
+                    return jsonify({
+                        'status': 'error',
+                        'message': 'Forbidden for users without full privileges'
+                    }), 403
+
+            # to be removed later
+            if users.find_one({'email': email}):
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Email has been used'
+                }), 401
+
             if password != repeat_password:
                 return jsonify({
                     'status': 'error',
                     'message': 'Passwords do not match'
-                })
+                }), 401
 
             info = {
                 "fullname": fullname,
@@ -146,6 +180,39 @@ def register():
                 "password": password,
                 "workspace": workspace
             }
+
+            schema = validate_reg(info)
+            if schema['msg'] != "success":
+                return jsonify({
+                    'status': 'error',
+                    'message': schema['error']
+                }), 401
+
+            if workspaces.find_one({'name': workspace}):
+                if user and user['workspace'] == workspace:
+                    pass
+                else:
+                    return jsonify({
+                        'status': 'error',
+                        'message': 'workspace name has been used. Choose unique name'
+                    }), 401
+
+            password_hash = generate_password_hash(password)
+            admin = False
+            if not user:
+                admin = True
+
+            public_id = str(uuid.uuid4())
+            new_user = {
+                "email": email,
+                "fullname": fullname,
+                "password": password_hash,
+                "public_id": public_id,
+                "workspace": workspace,
+                "is_admin": admin
+            }
+            users.insert_one(new_user)
+
         except Exception as e:
             pass
     else:

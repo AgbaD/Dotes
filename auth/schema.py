@@ -66,6 +66,9 @@ userDbSchema = {
         },
         "workspace": {
             "type": "string"
+        },
+        "is_admin": {
+            "type": 'boolean'
         }
     },
     "required": ["username", "email", "password", "public_id", "workspace"],
@@ -107,10 +110,10 @@ def validate_reg(user):
                 return {"msg": "error", "error": error_message}
             if p[1] == 'fullname':
                 if p[2] == 'minLength':
-                    error_message = "Username too short, minimum of 3 characters"
+                    error_message = "Fullname too short, minimum of 3 characters"
                     return {"msg": "error", "error": error_message}
                 if p[2] == 'maxLength':
-                    error_message = "Username too long, max of 15 characters"
+                    error_message = "Fullname too long, max of 27 characters"
                     return {"msg": "error", "error": error_message}
             if p[1] == 'email' and p[2] == 'minLength':
                 error_message = "Email too short, minimum length of 7"
