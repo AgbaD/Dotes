@@ -25,7 +25,7 @@ userRegSchema = {
             "type": "string"
         },
     },
-    "required": ["username", "email", "password", "workspace"],
+    "required": ["fullname", "email", "password", "workspace"],
     "additionalProperties": False
 }
 
@@ -66,16 +66,9 @@ userDbSchema = {
         },
         "workspace": {
             "type": "string"
-        },
-        "public_notes": {
-            'type': "object"
-        },
-        "private_notes": {
-            'type': "object"
         }
     },
-    "required": ["username", "email", "password", "public_id",
-                 "workspace", "public_notes", "private_notes"],
+    "required": ["username", "email", "password", "public_id", "workspace"],
     "additionalProperties": False
 }
 

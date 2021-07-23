@@ -66,53 +66,90 @@ def token_required(f):
 @app.route('/login', methods=['POST'])
 def login():
     if request.method == "POST":
-        data = request.get_json()
+        try:
+            data = request.get_json()
 
-        email = data['email']
-        password = data['password']
+            email = data['email']
+            password = data['password']
 
-        user_data = {
-            "email": email,
-            "password": password
-        }
+            user_data = {
+                "email": email,
+                "password": password
+            }
 
-        schema = validate_login(user_data)
-        if schema['msg'] == "error":
+            schema = validate_login(user_data)
+            if schema['msg'] == "error":
+                return jsonify({
+                    'status': 'error',
+                    'message': schema['error']
+                }), 402
+
+            user = users.find_one({'email': email})
+            if not user:
+                return jsonify({
+                    'status': 'error',
+                    'message': "Invalid email or password."
+                }), 402
+
+            if check_password_hash(user['password', password]):
+                token = jwt.encode({
+                    'public_id': user['public_id'],
+                    'exp': datetime.utcnow() + timedelta(minutes=30)
+                }, app.config['SECRET_KEY'])
+
+                return jsonify({
+                    'status': 'success',
+                    'message': "Login successful",
+                    'data': {
+                        'token': token.decode('UTF-8')
+                    }
+                })
+            else:
+                return jsonify({
+                    'status': 'error',
+                    'message': "Invalid email or password."
+                }), 402
+        except Exception as e:
             return jsonify({
                 'status': 'error',
-                'message': schema['error']
+                'message': e
             }), 402
-
-        user = users.find_one({'email': email})
-        if not user:
-            return jsonify({
-                'status': 'error',
-                'message': "Invalid email or password."
-            }), 402
-
-        if check_password_hash(user['password', password]):
-            token = jwt.encode({
-                'public_id': user['public_id'],
-                'exp': datetime.utcnow() + timedelta(minutes=30)
-            }, app.config['SECRET_KEY'])
-
-            return jsonify({
-                'status': 'success',
-                'message': "Login successful",
-                'data': {
-                    'token': token.decode('UTF-8')
-                }
-            })
-        else:
-            return jsonify({
-                'status': 'error',
-                'message': "Invalid email or password."
-            }), 402
+    else:
+        return jsonify({
+            'status': 'error',
+            'message': "Endpoint does not support GET requests"
+        }), 402
 
 
+@app.route('/register', methods=['POST'])
+@cache.cached(minutes=30)
+def register():
+    if request.method == "POST":
+        try:
+            data = request.get_json()
 
+            email = data['email']
+            password = data['password']
+            repeat_password = data['repeat_password']
+            fullname = data['fullname']
+            workspace = data['workspace']
 
+            if password != repeat_password:
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Passwords do not match'
+                })
 
+            info = {
+                "fullname": fullname,
+                "email": email,
+                "password": password,
+                "workspace": workspace
+            }
+        except Exception as e:
+            pass
+    else:
+        pass
 
 
 if __name__ == "__main__":
