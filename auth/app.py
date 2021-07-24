@@ -372,19 +372,35 @@ def update_user(current_user, user_email):
                     'message': "User not found"
                 }), 402
 
-            if user['workspace'] == current_user['workspace']:
+            if user['workspace'] != current_user['workspace']:
                 return jsonify({
                     'status': 'error',
                     'message': "Action forbidden! Cannot edit user in another workspace"
                 }), 402
 
+            new_data = {}
             if data['email']:
-                email = data['email']
+                new_data['email'] = data['email']
             if data["fullname"]:
-                fullname = data["fullname"]
+                new_data['fullname'] = data["fullname"]
             if data["password"]:
                 password = data["password"]
                 repeat_password = data["repeat_password"]
+
+                if password != repeat_password:
+                    return jsonify({
+                        'status': 'error',
+                        'message': 'Passwords do not match'
+                    }), 401
+                new_data['password'] = data["password"]
+            users.update_one(
+                {'email': user_email},
+                {'$set': new_data}
+            )
+            return jsonify({
+                'status': 'success',
+                'message': "User update successful"
+            })
 
         except Exception as e:
             return jsonify({
@@ -396,6 +412,12 @@ def update_user(current_user, user_email):
             'status': 'error',
             'message': "Endpoint does not support {} requests".format(request.method)
         }), 402
+
+
+@app.route("/delete_user/<user_email>", methods=['PUT', 'POST'])
+@token_required
+def delete_user(current_user, user_email):
+    pass
 
 
 if __name__ == "__main__":
