@@ -122,7 +122,7 @@ def login():
                     'data': {
                         'token': token.decode('UTF-8')
                     }
-                })
+                }), 200
             else:
                 return jsonify({
                     'status': 'error',
@@ -221,7 +221,48 @@ def register(user):
                     'message': schema['error']
                 })
             users.insert_one(new_user)
+            return jsonify({
+                'status': 'success',
+                'message': "User registration successful"
+            }), 200
 
+        except Exception as e:
+            return jsonify({
+                'status': 'error',
+                'message': e
+            }), 500
+    else:
+        return jsonify({
+            'status': 'error',
+            'message': "Endpoint does not support {} requests".format(request.method)
+        }), 402
+
+
+@app.route('/update_password', methods=['PUT', 'POST'])
+@token_required
+def update_password(current_user):
+    if request.method == "PUT" or request.method == "POST":
+        try:
+            data = request.get_json()
+            password = data['password']
+            repeat_password = data['repeat_password']
+
+            if password != repeat_password:
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Passwords do not match'
+                }), 401
+
+            password_hash = generate_password_hash(password)
+            public_id = current_user['public_id']
+            users.update_one(
+                {'public_id': public_id},
+                {'$set': {'password': password_hash}}
+            )
+            return jsonify({
+                'status': 'success',
+                'message': "Password update successful"
+            }), 200
         except Exception as e:
             return jsonify({
                 'status': 'error',
@@ -267,9 +308,43 @@ def profile(current_user):
 @app.route('/get_all_users', methods=['GET'])
 @token_required
 def get_all_users(current_user):
-    if current_user['is_admin']:
-        pass
+    if request.method == 'GET':
+        try:
+            if current_user['is_admin']:
+                workspace = current_user['workspace']
+                db_users = users.find({'workspace': workspace})
 
+                all_users = []
+                for user in db_users:
+                    data = {
+                        'email': user['email'],
+                        'fullname': user['fullname'],
+                        'workspace': user['workspace'],
+                        'is_admin': user['is_admin']
+                    }
+                    all_users.append(data)
+
+                return jsonify({
+                    'status': 'success',
+                    'data': {
+                        'all_users': all_users
+                    }
+                }), 200
+            else:
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Forbidden for users without full privileges'
+                }), 403
+        except Exception as e:
+            return jsonify({
+                'status': 'error',
+                'message': e
+            }), 500
+    else:
+        return jsonify({
+            'status': 'error',
+            'message': "Endpoint does not support {} requests".format(request.method)
+        }), 402
 
 
 if __name__ == "__main__":
