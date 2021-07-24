@@ -101,14 +101,14 @@ def login():
                 return jsonify({
                     'status': 'error',
                     'message': schema['error']
-                }), 402
+                }), 400
 
             user = users.find_one({'email': email})
             if not user:
                 return jsonify({
                     'status': 'error',
                     'message': "Invalid email or password."
-                }), 402
+                }), 400
 
             if check_password_hash(user['password'], password):
                 token = jwt.encode({
@@ -127,7 +127,7 @@ def login():
                 return jsonify({
                     'status': 'error',
                     'message': "Invalid email or password."
-                }), 402
+                }), 400
         except Exception as e:
             return jsonify({
                 'status': 'error',
@@ -137,7 +137,7 @@ def login():
         return jsonify({
             'status': 'error',
             'message': "Endpoint does not support {} requests".format(request.method)
-        }), 402
+        }), 400
 
 
 @app.route('/register', methods=['POST'])
@@ -165,13 +165,13 @@ def register(user):
                 return jsonify({
                     'status': 'error',
                     'message': 'Email has been used'
-                }), 401
+                }), 400
 
             if password != repeat_password:
                 return jsonify({
                     'status': 'error',
                     'message': 'Passwords do not match'
-                }), 401
+                }), 400
 
             info = {
                 "fullname": fullname,
@@ -185,7 +185,7 @@ def register(user):
                 return jsonify({
                     'status': 'error',
                     'message': schema['error']
-                }), 401
+                }), 400
 
             if workspaces.find_one({'name': workspace}):
                 if user and user['workspace'] == workspace:
@@ -194,12 +194,12 @@ def register(user):
                     return jsonify({
                         'status': 'error',
                         'message': f'Forbidden. You are not authorized to add user to workspace {workspace}'
-                    }), 401
+                    }), 403
                 else:
                     return jsonify({
                         'status': 'error',
                         'message': 'workspace name has been used. Choose unique name'
-                    }), 401
+                    }), 400
 
             password_hash = generate_password_hash(password)
             admin = False
@@ -224,12 +224,12 @@ def register(user):
                 return jsonify({
                     'status': 'error',
                     'message': schema['error']
-                })
+                }), 400
             users.insert_one(new_user)
             return jsonify({
                 'status': 'success',
                 'message': "User registration successful"
-            }), 200
+            }), 201
 
         except Exception as e:
             return jsonify({
@@ -240,7 +240,7 @@ def register(user):
         return jsonify({
             'status': 'error',
             'message': "Endpoint does not support {} requests".format(request.method)
-        }), 402
+        }), 400
 
 
 @app.route('/update_password', methods=['PUT', 'POST'])
@@ -256,7 +256,7 @@ def update_password(current_user):
                 return jsonify({
                     'status': 'error',
                     'message': 'Passwords do not match'
-                }), 401
+                }), 400
 
             password_hash = generate_password_hash(password)
             public_id = current_user['public_id']
@@ -277,7 +277,7 @@ def update_password(current_user):
         return jsonify({
             'status': 'error',
             'message': "Endpoint does not support {} requests".format(request.method)
-        }), 402
+        }), 400
 
 
 @app.route('/profile', methods=['GET'])
@@ -307,7 +307,7 @@ def profile(current_user):
         return jsonify({
             'status': 'error',
             'message': "Endpoint does not support {} requests".format(request.method)
-        }), 402
+        }), 400
 
 
 @app.route('/get_all_users', methods=['GET'])
@@ -349,7 +349,7 @@ def get_all_users(current_user):
         return jsonify({
             'status': 'error',
             'message': "Endpoint does not support {} requests".format(request.method)
-        }), 402
+        }), 400
 
 
 @app.route('/update_user/<user_email>', methods=['PUT', 'POST'])
@@ -368,20 +368,20 @@ def update_user(current_user, user_email):
                 return jsonify({
                     'status': 'error',
                     'message': "Invalid Credentials"
-                }), 402
+                }), 400
 
             user = users.find_one({'email': user_email})
             if not user:
                 return jsonify({
                     'status': 'error',
                     'message': "User not found"
-                }), 402
+                }), 404
 
             if user['workspace'] != current_user['workspace']:
                 return jsonify({
                     'status': 'error',
                     'message': "Action forbidden! Cannot edit user in another workspace"
-                }), 402
+                }), 403
 
             new_data = {}
             if data['email']:
@@ -405,7 +405,7 @@ def update_user(current_user, user_email):
             return jsonify({
                 'status': 'success',
                 'message': "User update successful"
-            })
+            }), 200
 
         except Exception as e:
             return jsonify({
@@ -416,7 +416,7 @@ def update_user(current_user, user_email):
         return jsonify({
             'status': 'error',
             'message': "Endpoint does not support {} requests".format(request.method)
-        }), 402
+        }), 400
 
 
 @app.route("/delete_user/<user_email>", methods=['DELETE'])
@@ -433,7 +433,7 @@ def delete_user(current_user, user_email):
         return jsonify({
             'status': 'error',
             'message': "User not found"
-        }), 402
+        }), 404
 
     if user['workspace'] != current_user['workspace']:
         return jsonify({
@@ -445,7 +445,7 @@ def delete_user(current_user, user_email):
     return jsonify({
         'status': 'success',
         'message': "User removed successfully"
-    }), 201
+    }), 200
 
 
 if __name__ == "__main__":
