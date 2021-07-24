@@ -347,5 +347,56 @@ def get_all_users(current_user):
         }), 402
 
 
+@app.route('/update_user/<user_email>', methods=['PUT', 'POST'])
+@token_required
+def update_user(current_user, user_email):
+    if request.method == "PUT" or request.method == "POST":
+        try:
+            if not current_user['is_admin']:
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Forbidden for users without full privileges'
+                }), 403
+
+            data = request.get_json()
+            if not data['email'] or data["fullname"] or data["password"]:
+                return jsonify({
+                    'status': 'error',
+                    'message': "Invalid Credentials"
+                }), 402
+
+            user = users.find_one({'email': user_email})
+            if not user:
+                return jsonify({
+                    'status': 'error',
+                    'message': "User not found"
+                }), 402
+
+            if user['workspace'] == current_user['workspace']:
+                return jsonify({
+                    'status': 'error',
+                    'message': "Action forbidden! Cannot edit user in another workspace"
+                }), 402
+
+            if data['email']:
+                email = data['email']
+            if data["fullname"]:
+                fullname = data["fullname"]
+            if data["password"]:
+                password = data["password"]
+                repeat_password = data["repeat_password"]
+
+        except Exception as e:
+            return jsonify({
+                'status': 'error',
+                'message': e
+            }), 500
+    else:
+        return jsonify({
+            'status': 'error',
+            'message': "Endpoint does not support {} requests".format(request.method)
+        }), 402
+
+
 if __name__ == "__main__":
     app.run()
