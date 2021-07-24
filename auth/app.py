@@ -190,6 +190,11 @@ def register(user):
             if workspaces.find_one({'name': workspace}):
                 if user and user['workspace'] == workspace:
                     pass
+                elif user and user['workspace'] != workspace:
+                    return jsonify({
+                        'status': 'error',
+                        'message': f'Forbidden. You are not authorized to add user to workspace {workspace}'
+                    }), 401
                 else:
                     return jsonify({
                         'status': 'error',
@@ -414,10 +419,33 @@ def update_user(current_user, user_email):
         }), 402
 
 
-@app.route("/delete_user/<user_email>", methods=['PUT', 'POST'])
+@app.route("/delete_user/<user_email>", methods=['DELETE'])
 @token_required
 def delete_user(current_user, user_email):
-    pass
+    if not current_user['is_admin']:
+        return jsonify({
+            'status': 'error',
+            'message': 'Forbidden for users without full privileges'
+        }), 403
+
+    user = users.find_one({'email': user_email})
+    if not user:
+        return jsonify({
+            'status': 'error',
+            'message': "User not found"
+        }), 402
+
+    if user['workspace'] != current_user['workspace']:
+        return jsonify({
+            'status': 'error',
+            'message': 'Forbidden for users without full privileges'
+        }), 403
+
+    user.delete_one({'email': user_email})
+    return jsonify({
+        'status': 'success',
+        'message': "User removed successfully"
+    }), 201
 
 
 if __name__ == "__main__":
