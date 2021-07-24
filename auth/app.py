@@ -132,11 +132,11 @@ def login():
             return jsonify({
                 'status': 'error',
                 'message': e
-            }), 402
+            }), 500
     else:
         return jsonify({
             'status': 'error',
-            'message': "Endpoint does not support GET requests"
+            'message': "Endpoint does not support {} requests".format(request.method)
         }), 402
 
 
@@ -202,6 +202,9 @@ def register(user):
                 admin = True
 
             public_id = str(uuid.uuid4())
+            while users.find_one({'public_id': public_id}):
+                public_id = str(uuid.uuid4())
+
             new_user = {
                 "email": email,
                 "fullname": fullname,
@@ -210,12 +213,63 @@ def register(user):
                 "workspace": workspace,
                 "is_admin": admin
             }
+
+            schema = validate_user_db(new_user)
+            if schema['msg'] != "success":
+                return jsonify({
+                    'status': 'error',
+                    'message': schema['error']
+                })
             users.insert_one(new_user)
 
         except Exception as e:
-            pass
+            return jsonify({
+                'status': 'error',
+                'message': e
+            }), 500
     else:
+        return jsonify({
+            'status': 'error',
+            'message': "Endpoint does not support {} requests".format(request.method)
+        }), 402
+
+
+@app.route('/profile', methods=['GET'])
+@token_required
+def profile(current_user):
+    if request.method == 'GET':
+        try:
+            data = {
+                'email': current_user['email'],
+                'fullname': current_user['fullname'],
+                'workspace': current_user['workspace'],
+                'is_admin': current_user['is_admin']
+            }
+
+            return jsonify({
+                'status': 'success',
+                'data': {
+                    'user_details': data
+                }
+            }), 200
+        except Exception as e:
+            return jsonify({
+                'status': 'error',
+                'message': e
+            }), 500
+    else:
+        return jsonify({
+            'status': 'error',
+            'message': "Endpoint does not support {} requests".format(request.method)
+        }), 402
+
+
+@app.route('/get_all_users', methods=['GET'])
+@token_required
+def get_all_users(current_user):
+    if current_user['is_admin']:
         pass
+
 
 
 if __name__ == "__main__":
