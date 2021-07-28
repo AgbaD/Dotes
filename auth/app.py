@@ -17,20 +17,19 @@ from datetime import  datetime, timedelta
 app = Flask(__name__)
 
 # Configurations
-app.config['SECRET_KEY'] = ''
+app.config['SECRET_KEY'] = 'x9exa2[xd3\\x1e_xaeB|x8as\\x97xf1xaa~|\\x131x9cn'
 app.config['MONGO_URI'] = 'mongodb+srv://asteroid:{password}@cluster0.ppcp1.mongodb.net/{database}?retryWrites=true&w=majority'\
-    .format(password='asteroidpass', database="asteroiddb")
+    .format(password='asteroidpass', database="Dotes")
 app.config['SSL_DISABLE'] = False
 
 mongo = PyMongo(app)
-sslify = SSLify()
 CORS(app)
 
 workspaces = mongo.db.workspaces
 users = mongo.db.users
 
 if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
-    sslify.init_app(app)
+    sslify = SSLify(app)
 
 
 def token_optional(f):
@@ -80,6 +79,11 @@ def token_required(f):
 
         return f(current_user, *args, **kwargs)
     return decorated
+
+
+@app.route('/')
+def index():
+    return "You are connected!"
 
 
 @app.route('/login', methods=['POST'])
@@ -289,7 +293,8 @@ def profile(current_user):
                 'email': current_user['email'],
                 'fullname': current_user['fullname'],
                 'workspace': current_user['workspace'],
-                'is_admin': current_user['is_admin']
+                'is_admin': current_user['is_admin'],
+                'public_id': current_user['public_id']
             }
 
             return jsonify({
@@ -315,31 +320,26 @@ def profile(current_user):
 def get_all_users(current_user):
     if request.method == 'GET':
         try:
-            if current_user['is_admin']:
-                workspace = current_user['workspace']
-                db_users = users.find({'workspace': workspace})
+            workspace = current_user['workspace']
+            db_users = users.find({'workspace': workspace})
 
-                all_users = []
-                for user in db_users:
-                    data = {
-                        'email': user['email'],
-                        'fullname': user['fullname'],
-                        'workspace': user['workspace'],
-                        'is_admin': user['is_admin']
-                    }
-                    all_users.append(data)
+            all_users = []
+            for user in db_users:
+                data = {
+                    'email': user['email'],
+                    'fullname': user['fullname'],
+                    'workspace': user['workspace'],
+                    'is_admin': user['is_admin'],
+                    'public_id': user['public_id']
+                }
+                all_users.append(data)
 
-                return jsonify({
-                    'status': 'success',
-                    'data': {
-                        'all_users': all_users
-                    }
-                }), 200
-            else:
-                return jsonify({
-                    'status': 'error',
-                    'message': 'Forbidden for users without full privileges'
-                }), 403
+            return jsonify({
+                'status': 'success',
+                'data': {
+                    'all_users': all_users
+                }
+            }), 200
         except Exception as e:
             return jsonify({
                 'status': 'error',
@@ -449,4 +449,4 @@ def delete_user(current_user, user_email):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

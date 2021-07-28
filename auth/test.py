@@ -14,7 +14,5 @@ class AuthTest(unittest.TestCase):
         self.assertEqual(status_code, 400)
 
 
-
-
 if __name__ == "__main__":
     unittest.main()
