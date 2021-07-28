@@ -10,8 +10,13 @@ class AuthTest(unittest.TestCase):
     def test_get_login(self):
         tester = app.test_client(self)
         response = tester.get("/login")
-        status_code = response.status_code
-        self.assertEqual(status_code, 400)
+        self.assertEqual(response.status_code, 400)
+
+    def test_server(self):
+        tester = app.test_client(self)
+        response = tester.get("/")
+        self.assertEqual(response.status_code, 200)
+
 
 
 if __name__ == "__main__":

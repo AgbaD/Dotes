@@ -150,6 +150,7 @@ def register(user):
     if request.method == "POST":
         try:
             data = request.get_json()
+            print(data)
 
             email = data['email']
             password = data['password']
