@@ -44,7 +44,7 @@ def token_optional(f):
             return f(user=None, *args, **kwargs)
 
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
             user = users.find_one({'public_id': data['public_id']})
             if user:
                 return f(user=user, *args, **kwargs)
@@ -71,7 +71,7 @@ def token_required(f):
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
             current_user = users.find_one({'public_id': data['public_id']})
 
-        except Exception as e:
+        except Exception:
             return jsonify({
                 'status': 'error',
                 'message': "Token is invalid"
@@ -150,7 +150,6 @@ def register(user):
     if request.method == "POST":
         try:
             data = request.args
-            print(data)
 
             email = data['email']
             password = data['password']
@@ -231,6 +230,7 @@ def register(user):
                     'message': schema['error']
                 }), 400
             users.insert_one(new_user)
+            workspaces.insert_one({'name': workspace})
             return jsonify({
                 'status': 'success',
                 'message': "User registration successful"
@@ -253,7 +253,7 @@ def register(user):
 def update_password(current_user):
     if request.method == "PUT" or request.method == "POST":
         try:
-            data = request.get_json()
+            data = request.args
             password = data['password']
             repeat_password = data['repeat_password']
 
@@ -364,7 +364,7 @@ def update_user(current_user, user_email):
                     'message': 'Forbidden for users without full privileges'
                 }), 403
 
-            data = request.get_json()
+            data = request.args
             if not data['email'] or data["fullname"] or data["password"]:
                 return jsonify({
                     'status': 'error',
@@ -442,7 +442,7 @@ def delete_user(current_user, user_email):
             'message': 'Forbidden for users without full privileges'
         }), 403
 
-    user.delete_one({'email': user_email})
+    users.delete_one({'email': user_email})
     return jsonify({
         'status': 'success',
         'message': "User removed successfully"
