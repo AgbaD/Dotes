@@ -3,9 +3,6 @@
  * BUT PLEASE DON'T CHANGE THE NAME OF THE SOCKET EMIT EVENTS AND THE SOCKET LISTENERS AND TOKEN TO EVERY SOCKET EMIT EVENTS;
  * 
  * 
- * 
- * please change th io url on line (28) to your web url and reach out to me so that i can add it to allowed urls on the server
- * 
  *                  DESIGN
  *  USERS CAN CREATE A PUBLIC NOTE WHERE ALL USERS CAN SEE
  *  USERS CAN SEND PRIVATE NOTE TO OTHER COLLEAGES
