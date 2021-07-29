@@ -105,7 +105,7 @@ def login():
     """
     if request.method == "POST":
         try:
-            data = request.args
+            data = request.get_json()
 
             email = data['email']
             password = data['password']
@@ -185,7 +185,7 @@ def register(user):
     """
     if request.method == "POST":
         try:
-            data = request.args
+            data = request.get_json()
 
             email = data['email']
             password = data['password']
@@ -305,7 +305,8 @@ def update_password(current_user):
     """
     if request.method == "PUT" or request.method == "POST":
         try:
-            data = request.args
+            data = request.get_json()
+
             password = data['password']
             repeat_password = data['repeat_password']
 
@@ -463,7 +464,7 @@ def update_user(current_user, user_email):
                     'message': 'Forbidden for users without full privileges'
                 }), 403
 
-            data = request.args
+            data = request.get_json()
             if not data['email'] or data["fullname"] or data["password"]:
                 return jsonify({
                     'status': 'error',
