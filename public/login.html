@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dotes</title>
+    <style>
+        *{
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        #container{
+            width: 80%;
+            height: 80vh;
+            border: 2px solid black;
+            margin: 30px 10%;
+            display: none;
+        }
+        #login{
+            margin: 50px;
+        }
+        #chatBox{
+            width: 100%;
+            height: 60vh;
+        }
+        #message{
+            width: 100%;
+            height: 5vh;
+        }
+        #chatBtn{
+            width: 100%;
+            border-width: 0;
+            background-color: blue;
+            height: 4.5vh;
+            color: white;
+        }
+        ul{
+            width: 100%;
+            background-color: black;
+        }
+        nav li{
+            float: left;
+            display: inline;
+            padding: 10px;
+            color: white;
+
+        }
+        nav li a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- <nav>
+        <ul>
+            <li><a href="index.html">General Workspace</a></li>
+            <li><a href="drell.html">Drell's Workspace</a></li>
+            <li><a href="blank.html">Blank's Workspace</a></li>
+            <li><a href="john.html">John's Workspace</a></li>
+        </ul>
+    </nav> -->
+
+    <form id="login">
+        <br> <div style="margin: 30px; width: 100%;"></div>
+        <h1>Choose you UserName</h1>
+        <input type="text" name="username" id="usernameBox" required>
+        <input type="text" name="public_id" id="" placeholder="public id" required>
+        <div id="loginError"></div>
+        <button id="loginBtn">Login</button>
+    </form>
+
+    <script>
+         const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.EHq8Naqlj1SdrFPh6nADPt_2NlwhpfIAkFaLhhalYSo";
+
+         localStorage.setItem("token", token);
+    </script>
+    <script src="./login.js"></script>
+</body>
+</html>
