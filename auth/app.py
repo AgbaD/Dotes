@@ -64,11 +64,11 @@ def token_required(f):
         if not token:
             return jsonify({
                 'status': 'error',
-                'message': "Token is invalid"
+                'message': "Token is missing"
             }), 401
 
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
             current_user = users.find_one({'public_id': data['public_id']})
 
         except Exception as e:
@@ -90,7 +90,7 @@ def index():
 def login():
     if request.method == "POST":
         try:
-            data = request.get_json()
+            data = request.args
 
             email = data['email']
             password = data['password']
@@ -118,13 +118,13 @@ def login():
                 token = jwt.encode({
                     'public_id': user['public_id'],
                     'exp': datetime.utcnow() + timedelta(minutes=30)
-                }, app.config['SECRET_KEY'])
+                }, app.config['SECRET_KEY'], "HS256")
 
                 return jsonify({
                     'status': 'success',
                     'message': "Login successful",
                     'data': {
-                        'token': token.decode('UTF-8')
+                        'token': token
                     }
                 }), 200
             else:
@@ -149,7 +149,7 @@ def login():
 def register(user):
     if request.method == "POST":
         try:
-            data = request.get_json()
+            data = request.args
             print(data)
 
             email = data['email']

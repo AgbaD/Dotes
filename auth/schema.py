@@ -71,7 +71,7 @@ userDbSchema = {
             "type": 'boolean'
         }
     },
-    "required": ["username", "email", "password", "public_id", "workspace"],
+    "required": ["fullname", "email", "password", "public_id", "workspace"],
     "additionalProperties": False
 }
 
