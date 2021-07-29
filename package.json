@@ -1,7 +1,7 @@
 {
-  "name": "dotes_v2",
-  "version": "2.0.0",
-  "description": "dotes workspace app version 2",
+  "name": "dotes",
+  "version": "1.0.0",
+  "description": "dotes workspace app ",
   "main": "app",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
