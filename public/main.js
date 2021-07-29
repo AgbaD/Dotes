@@ -48,6 +48,10 @@ socket = io("https://dotessocket.herokuapp.com", {
  // listen anytime a message is reciecieved 
  socket.on("message", note =>{ 
      if(note.destination === "general"){
+<<<<<<< HEAD
+=======
+         console.log(role)
+>>>>>>> 355f77af563ec380245c54ea2522329243206518
         if(note.sender === username || role == "admin" ){
             publicNoteBox.innerHTML += `<div class="note" id="${note._id}" data-doc="${note._id}">
             <p style="margin-bottom: 5px"><b> from ${note.sender} </b><i style="color:grey">${note.time}</i></p> 

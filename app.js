@@ -28,7 +28,11 @@ const httpServer = http.createServer(app);
 // initialize socket.io
 const io = socketio(httpServer, {
     cors: {
+<<<<<<< HEAD
         origin: ["http://localhost:3000", "https://dotessocket.herokuapp.com/", "http://127.0.0.1:5000", "dotes.netlify.app"]
+=======
+        origin: ["http://localhost:3000", "https://dotessocket.herokuapp.com/"]
+>>>>>>> 355f77af563ec380245c54ea2522329243206518
     }
 });
 
