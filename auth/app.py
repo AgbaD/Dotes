@@ -341,7 +341,8 @@ def update_password(current_user):
 @token_required
 def profile(current_user):
     """
-    $curl -X GET /profile
+    required
+        $curl -X GET /profile
         -H '{"x-access-token": token}'
 
     :param current_user: // if x-access-token in header && token is_valid, pass user to endpoint
@@ -385,7 +386,8 @@ def profile(current_user):
 @token_required
 def get_all_users(current_user):
     """
-    $curl -X GET /get_all_users
+    required
+        $curl -X GET /get_all_users
         -H '{"x-access-token": token}'
 
     :param current_user: // if x-access-token in header && token is_valid, pass user to endpoint
