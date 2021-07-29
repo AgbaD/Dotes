@@ -88,6 +88,21 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
+    """
+    required
+        $curl -X POST /login
+        -d '{
+            "email": "example@example.com",
+            "password": "xxxxxx"
+        }'
+    :return: {
+        'status': 'success',
+        'message': "Login successful",
+        'data': {
+            'token': token
+        }
+    }
+    """
     if request.method == "POST":
         try:
             data = request.args
@@ -147,6 +162,27 @@ def login():
 @app.route('/register', methods=['POST'])
 @token_optional
 def register(user):
+    """
+    required
+        $curl -X POST /register
+        -d '{
+            "email": "example@example.com",
+            "password": "xxxxxx",
+            "repeat_password": "xxxxxx",
+            "fullname": "John Doe",
+            "workspace": "workspace name"   // if user, user workspace must == workspace
+        }'
+    optional
+        -H '{"x-access-token": token}'
+
+    :param user: // if x-access-token in header && token is_valid, pass user to endpoint
+            // else, pass None
+
+    :return: {
+        'status': 'success',
+        'message': "User registration successful"
+    }
+    """
     if request.method == "POST":
         try:
             data = request.args
@@ -251,6 +287,22 @@ def register(user):
 @app.route('/update_password', methods=['PUT', 'POST'])
 @token_required
 def update_password(current_user):
+    """
+    required
+        $curl -X POST|PUT /update_password
+        -H '{"x-access-token": token}'
+        -d '{
+            "password": "xxxxxx",
+            "repeat_password": "xxxxxx",
+        }'
+
+    :param current_user: // if x-access-token in header && token is_valid, pass user to endpoint
+            // else, return error as response
+    :return: {
+        'status': 'success',
+        'message': "Password update successful"
+    }
+    """
     if request.method == "PUT" or request.method == "POST":
         try:
             data = request.args
@@ -288,6 +340,19 @@ def update_password(current_user):
 @app.route('/profile', methods=['GET'])
 @token_required
 def profile(current_user):
+    """
+    $curl -X GET /profile
+        -H '{"x-access-token": token}'
+
+    :param current_user: // if x-access-token in header && token is_valid, pass user to endpoint
+            // else, return error as response
+    :return: {
+        'status': 'success',
+        'data': {
+            'user_details': data
+        }
+    }
+    """
     if request.method == 'GET':
         try:
             data = {
@@ -319,6 +384,19 @@ def profile(current_user):
 @app.route('/get_all_users', methods=['GET'])
 @token_required
 def get_all_users(current_user):
+    """
+    $curl -X GET /get_all_users
+        -H '{"x-access-token": token}'
+
+    :param current_user: // if x-access-token in header && token is_valid, pass user to endpoint
+            // else, return error as response
+    :return: {
+        'status': 'success',
+        'data': {
+            'all_users': all_users
+        }
+    }
+    """
     if request.method == 'GET':
         try:
             workspace = current_user['workspace']
@@ -356,6 +434,25 @@ def get_all_users(current_user):
 @app.route('/update_user/<user_email>', methods=['PUT', 'POST'])
 @token_required
 def update_user(current_user, user_email):
+    """
+    required
+        $curl -X POST|PUT /update_user/<user_email>
+        -H '{"x-access-token": token}'
+        -d '{
+            "password": "xxxxxx",
+            "email": "example@email.com",
+            "fullname": "John Doe"
+        }'  // at least one of these 3
+
+    :param current_user: // if x-access-token in header && token is_valid, pass user to endpoint
+            // else, return error as response
+
+    :param user_email: // email of user to be updated
+    :return: {
+        'status': 'success',
+        'message': "User update successful"
+    }
+    """
     if request.method == "PUT" or request.method == "POST":
         try:
             if not current_user['is_admin']:
@@ -423,6 +520,19 @@ def update_user(current_user, user_email):
 @app.route("/delete_user/<user_email>", methods=['DELETE'])
 @token_required
 def delete_user(current_user, user_email):
+    """
+    required
+        $curl -X DELETE /delete_user/<user_email>
+        -H '{"x-access-token": token}'
+
+    :param current_user: // if x-access-token in header && token is_valid, pass user to endpoint
+            // else, return error as response
+    :param user_email: // email of user to be deleted
+    :return: {
+        'status': 'success',
+        'message': "User removed successfully"
+    }
+    """
     if not current_user['is_admin']:
         return jsonify({
             'status': 'error',
