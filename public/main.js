@@ -26,7 +26,7 @@ var username;
 
 // `================-------------------------------------CONFIGURE SOCKET DETAILS FROM TOKEN ----------------------------=====================\\
 const token = localStorage.getItem("token");
-socket = io("http://192.168.43.159:3000", {
+socket = io(" https://dotessocket.herokuapp.com/", {
     auth:{
         token
     },

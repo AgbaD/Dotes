@@ -28,7 +28,7 @@ const httpServer = http.createServer(app);
 // initialize socket.io
 const io = socketio(httpServer, {
     cors: {
-        origin: ["http://localhost:3000", "http://192.168.43.159:3000"]
+        origin: ["http://localhost:3000", "https://dotessocket.herokuapp.com/"]
     }
 });
 
