@@ -1,0 +1,19 @@
+{
+  "name": "dotes_v2",
+  "version": "2.0.0",
+  "description": "dotes workspace app version 2",
+  "main": "app",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "drell",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
+    "mongoose": "^5.13.3",
+    "socket.io": "^4.1.3"
+  }
+}

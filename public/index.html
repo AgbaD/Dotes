@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dotes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        *{
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        #container{
+            width: 80%;
+            height: 80vh;
+            border: 2px solid black;
+            margin: 30px 10%;
+            
+        }
+        #login{
+            margin: 50px;
+        }
+        #public-note-box{
+            width: 100%;
+            height: 50vh;
+            overflow-y: scroll;
+        }
+        #message{
+            width: 100%;
+            height: 5vh;
+        }
+        #destination{
+            width: 100%;
+        }
+        #public-note-btn{
+            width: 100%;
+            border-width: 0;
+            background-color: blue;
+            height: 4.5vh;
+            color: white;
+        }
+        ul{
+            width: 100%;
+            background-color: black;
+        }
+        nav li{
+            float: left;
+            display: inline;
+            color: white;
+            margin: 10px;
+
+        }
+        nav li  {
+            text-decoration: none;
+        }
+        .note{
+            width: 80%;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            padding: 20px;
+            margin: 5px;
+        }
+        #delete{
+            background-color: red;
+            color: white;
+            width: 70px;
+            border: none;
+           margin: 20px;
+           cursor: pointer;
+
+        }
+    </style>
+</head>
+<body>
+    
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="destination-title"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div id="modal-note-body" style="width: 100%; height: 50vh; overflow-y: scroll;">
+
+            </div>
+            
+          <form id="private-note-form">
+            <input type="text" name="destination" id="private-destination" readonly style="width: 100%; height: 5vh; border: none;">
+              <textarea name="private-message" id="private-message" cols="30" rows="10" style="width: 100%; height:20vh ;"></textarea>
+              <button>Send</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div id="container">
+        
+        <div>User: <span id="user"></span> 
+            Room: <span id="room">General</span>
+            <nav>
+                <ul>
+                <li class="private-room-btn btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">john</li>
+                <li class="private-room-btn btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">drell</li>
+                <li class="private-room-btn btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">blank</li>
+                <li class="private-room-btn btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">toyeeb</li>
+                    
+                </ul>
+            </nav>
+        </div>
+         <div id="public-note-box">
+        </div>
+        <form id="public-note-form">
+            <input type="text" name="destination" id="destination" value="general">
+            <input type="text" name="messageBox" id="message">          
+            <button id="public-note-btn">Send</button>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+         
+        
+
+    </script>
+    <script src="./main.js"></script>
+</body>
+</html>
