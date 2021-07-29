@@ -79,7 +79,12 @@ def token_required(f):
 
         return f(current_user, *args, **kwargs)
     return decorated
-    
+
+
+@app.route('/')
+def index():
+    return "You are connected!"
+
 
 @app.route('/login', methods=['POST'])
 def login():
