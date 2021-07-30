@@ -240,6 +240,8 @@ def register(user):
                         'status': 'error',
                         'message': 'workspace name has been used. Choose unique name'
                     }), 400
+            else:
+                workspaces.insert_one({'name': workspace})
 
             password_hash = generate_password_hash(password)
             admin = False
@@ -266,7 +268,6 @@ def register(user):
                     'message': schema['error']
                 }), 400
             users.insert_one(new_user)
-            workspaces.insert_one({'name': workspace})
             return jsonify({
                 'status': 'success',
                 'message': "User registration successful"
