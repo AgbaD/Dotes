@@ -13,13 +13,9 @@ function login(e){
     xhr.setRequestHeader("Content-Type","application/json");
 
     xhr.onload = function(){
-        if(this.status == 200){
-            var body = this.response ;
-            var data = JSON.parse(body);
-            alert(data.message);
-        }else{
-            alert('Please Retry!');
-        }
+        var body = this.response ;
+        var data = JSON.parse(body);  
+        alert(data.message);
     };
     xhr.send(JSON.stringify(params));
 };
