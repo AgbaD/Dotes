@@ -107,7 +107,7 @@ def login():
         try:
             data = request.get_json()
 
-            email = data['email']
+            email = data['email'].lower()
             password = data['password']
 
             user_data = {
@@ -187,11 +187,11 @@ def register(user):
         try:
             data = request.get_json()
 
-            email = data['email']
+            email = data['email'].lower()
             password = data['password']
             repeat_password = data['repeat_password']
             fullname = data['fullname']
-            workspace = data['workspace']
+            workspace = str(data['workspace'])
 
             if user:
                 if not user['is_admin']:
