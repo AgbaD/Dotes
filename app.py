@@ -1,25 +1,33 @@
 #!/usr/bin/python3
 # Author:   @AgbaD || @agba_dr3
 
-from flask import Flask, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, request, jsonify
 from flask_pymongo import PyMongo
-from flask_cors import CORS
 from flask_sslify import SSLify
+from dotenv import load_dotenv
+from flask_cors import CORS
 import jwt
+
+import os
+import uuid
+from functools import wraps
+from datetime import datetime, timedelta
 
 from schema import validate_login, validate_reg, validate_user_db
 
-import uuid
-from functools import wraps
-from datetime import  datetime, timedelta
 
+load_dotenv()
 app = Flask(__name__)
 
+# db
+password = os.getenv('PASSWORD')
+database = "Dotes"
+url = f'mongodb+srv://asteroid:{password}@cluster0.ppcp1.mongodb.net/{database}?retryWrites=true&w=majority'
+
 # Configurations
-app.config['SECRET_KEY'] = 'x9exa2[xd3\\x1e_xaeB|x8as\\x97xf1xaa~|\\x131x9cn'
-app.config['MONGO_URI'] = 'mongodb+srv://asteroid:{password}@cluster0.ppcp1.mongodb.net/{database}?retryWrites=true&w=majority'\
-    .format(password='asteroidpass', database="Dotes")
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['MONGO_URI'] = url
 app.config['SSL_DISABLE'] = False
 
 mongo = PyMongo(app)
@@ -27,6 +35,7 @@ CORS(app)
 
 workspaces = mongo.db.workspaces
 users = mongo.db.users
+
 
 if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
     sslify = SSLify(app)
